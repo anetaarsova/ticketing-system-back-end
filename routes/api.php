@@ -18,9 +18,23 @@ use Illuminate\Support\Facades\Route;
 //    return $request->user();
 //});
 
-Route::middleware('client_credentials')->post('/oauth/token', 'ApiTokenController@issueToken')->name('token');
+Route::group([
+    'prefix' => 'auth'
+], function () {
+    Route::post('login', 'AuthController@login');
+    Route::post('register', 'AuthController@register');
 
-Route::middleware(['auth:api', 'client_credentials'])->group(function () {
+    Route::group([
+        'middleware' => 'auth:api'
+    ], function() {
+        Route::get('logout', 'AuthController@logout');
+        Route::get('user', 'AuthController@user');
+    });
+});
+
+//Route::middleware('client_credentials')->post('/oauth/token', 'ApiTokenController@issueToken')->name('token');
+//'client_credentials'
+Route::middleware(['auth:api'])->group(function () {
     Route::resource('users', 'User');
     Route::get('users?role{user|admin}', 'User@index');
     Route::resource('tickets', 'TicketController');
