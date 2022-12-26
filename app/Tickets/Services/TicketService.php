@@ -7,6 +7,7 @@ namespace App\Tickets\Services;
 use App\App\Services\AbstractService;
 use App\Contracts\CrudAware;
 use App\Models\Ticket;
+use Illuminate\Support\Facades\Storage;
 
 class TicketService extends AbstractService implements CrudAware
 {
@@ -64,7 +65,11 @@ class TicketService extends AbstractService implements CrudAware
      */
     public function delete($id)
     {
-        return Ticket::find($id)->delete();
+        $ticket = Ticket::find($id);
+        if($ticket->image) {
+            Storage::delete('/public' . $ticket->image);
+        }
+        return $ticket->delete();
     }
 
     /**
@@ -79,6 +84,7 @@ class TicketService extends AbstractService implements CrudAware
         $response['tickets'] = $tickets->toArray();
 
         $this->setResponseData($response);
+        $this->addResponseMetadata('count', count($tickets));
         return $this;
     }
 

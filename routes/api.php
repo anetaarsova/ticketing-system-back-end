@@ -34,9 +34,11 @@ Route::group([
 
 //Route::middleware('client_credentials')->post('/oauth/token', 'ApiTokenController@issueToken')->name('token');
 //'client_credentials'
+//'cors'
 Route::middleware(['auth:api'])->group(function () {
     Route::resource('users', 'User');
     Route::get('users?role{user|admin}', 'User@index');
     Route::resource('tickets', 'TicketController');
+    Route::get('tickets/user/{userId}', 'TicketController@getTicketsByUser');
 });
 
